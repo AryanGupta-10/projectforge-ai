@@ -30,6 +30,7 @@ next-env.d.ts
 .install*.log
 .dev-server*.log
 projectforge-ai-deploy.zip
+projectforge-ai-production.zip
 
 # preserved legacy scaffold; the production app lives in /app, /components and /lib
 /src

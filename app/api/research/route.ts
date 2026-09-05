@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
         ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
       },
       next: { revalidate: 900 },
+      signal: AbortSignal.timeout(8_000),
     });
     if (!response.ok) {
       const message = response.status === 403 ? "GitHub research is rate-limited. Add GITHUB_TOKEN or try again later." : "Research is temporarily unavailable.";
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
         sourceType: "GitHub public repository",
       })),
       disclaimer: "These are discovery leads from GitHub search. ProjectForge does not infer feature overlap without reviewing the source content.",
-    });
+    }, { headers: { "Cache-Control": "public, s-maxage=900, stale-while-revalidate=3600" } });
   } catch {
     return NextResponse.json({ error: "Research unavailable. Check your connection and try again." }, { status: 503 });
   }
