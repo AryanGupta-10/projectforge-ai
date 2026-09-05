@@ -18,11 +18,19 @@ export async function POST(request: NextRequest) {
   if (!process.env.GEMINI_API_KEY) return NextResponse.json({ error: "AI is not configured yet. Add GEMINI_API_KEY in Vercel environment variables, then redeploy." }, { status: 503, headers: { "Cache-Control": "no-store" } });
   const prompt = buildAiPrompt(parsed.data);
   try {
-    const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
-      method: "POST", headers: { "Content-Type": "application/json" }, signal: AbortSignal.timeout(25_000), body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.55, maxOutputTokens: 1800 } }),
+    // Gemini 2.0 Flash was retired. Keep the model current and keep credentials out of URLs and logs.
+    const model = "gemini-3.8-flash";
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+      method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY }, signal: AbortSignal.timeout(25_000), body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.55, maxOutputTokens: 1800 } }),
     });
-    if (!response.ok) return NextResponse.json({ error: "Gemini could not complete this request. Check GEMINI_MODEL, your API key, and quota." }, { status: 502, headers: { "Cache-Control": "no-store" } });
+    if (!response.ok) {
+      const error = response.status === 401 || response.status === 403
+        ? "Gemini rejected the server credential. Create a fresh Gemini API key in Google AI Studio, then update GEMINI_API_KEY in Vercel."
+        : response.status === 429
+          ? "Gemini quota is temporarily exhausted. Please wait a minute and try again."
+          : "Gemini could not complete this request. Please try again shortly.";
+      return NextResponse.json({ error }, { status: 502, headers: { "Cache-Control": "no-store" } });
+    }
     const data: unknown = await response.json();
     const reply = extractGeminiText(data);
     if (!reply) return NextResponse.json({ error: "Gemini returned no usable text. Please try again." }, { status: 502, headers: { "Cache-Control": "no-store" } });

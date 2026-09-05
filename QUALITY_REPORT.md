@@ -23,6 +23,6 @@ All three commands passed in the release workspace. Automated scoring is externa
 
 ## Production configuration
 
-- `GEMINI_API_KEY` is configured as a Vercel **Secret** for Production and Preview.
+- `GEMINI_API_KEY` is configured as a Vercel **Secret** for Production and Preview and is sent upstream only through the `x-goog-api-key` server header.
 - The key is never committed to GitHub or sent to the browser.
 - The active Vercel project is connected to the `main` branch for automatic deployments.

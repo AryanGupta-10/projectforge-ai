@@ -131,7 +131,7 @@ Simulates a demanding hackathon evaluator with pre-submission ratings, strongest
 
 ### Live AI mentor and personalized generation
 
-ProjectForge includes a **Your profile** screen (saved in the browser) and an **AI mentor** screen. Add `GEMINI_API_KEY` and, optionally, `GEMINI_MODEL` in `.env.local` or Vercel environment variables. The mentor sends the saved study profile and active project context to Gemini through a server-only API route. If the key, model, quota, or network is unavailable, it shows a clear error rather than manufacturing an AI reply.
+ProjectForge includes a **Your profile** screen (saved in the browser) and an **AI mentor** screen. Add `GEMINI_API_KEY` in `.env.local` or Vercel environment variables. The mentor sends the saved study profile and active project context to Gemini through a server-only API route using the current `gemini-3.8-flash` model and an `x-goog-api-key` server header. If the key, model, quota, or network is unavailable, it shows a clear error rather than manufacturing an AI reply.
 
 ### Prerequisites
 - Node.js 18.x or 20.x
