@@ -155,7 +155,7 @@ cp .env.example .env.local
 GEMINI_API_KEY=your_gemini_api_key_here
 GITHUB_TOKEN=your_optional_github_token_here
 ```
-*Note: If `GEMINI_API_KEY` is omitted, ProjectForge AI automatically uses its built-in offline cached intelligence for 100% demo reliability.*
+*Note: If `GEMINI_API_KEY` is omitted, the AI mentor deliberately reports that it is not configured; it never fabricates an AI reply. Seeded candidate ideas and deterministic scoring remain available offline.*
 
 ### Running Development Server
 ```bash
